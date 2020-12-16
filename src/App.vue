@@ -1,18 +1,17 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div>{{ $store.state.userInfo.userName }}</div>
+    <div>{{ $store.getters.getUserName }}</div>
+
+    <button @click="$store.mutations.setUserName('菠萝飘雪')">点我修改</button>
+    <button @click="$store.actions.setUserName('菠萝飘雪2')">点我修改</button>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
-  }
 }
 </script>
 
