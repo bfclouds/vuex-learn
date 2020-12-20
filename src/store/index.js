@@ -26,6 +26,7 @@ const module = new Vuex.Store({
   },
   modules: {
     a: {
+      namespace: true,
       state: {
         userInfo: {
           userName: '刘氏杜邦',
@@ -33,9 +34,9 @@ const module = new Vuex.Store({
         }
       },
       getters: {
-        // getUserName: (state) => {
-        //   return state.userInfo.userName
-        // }
+        getUserName: (state) => {
+          return state.userInfo.userName
+        }
       },
       mutations: {
         setUserName (state, name) {
@@ -56,6 +57,7 @@ const module = new Vuex.Store({
       }
     },
     b: {
+      namespace: true,
       state: {
         userInfo: {
           userName: '到附近的反馈',
@@ -63,9 +65,9 @@ const module = new Vuex.Store({
         }
       },
       getters: {
-        // getUserName: (state) => {
-        //   return state.userInfo.userName
-        // }
+        getUserName: (state) => {
+          return state.userInfo.userName
+        }
       },
       mutations: {
         setUserName (state, name) {

@@ -1,3 +1,4 @@
+
 let Vue = {}
 let forEach = (obj, callBack) => {
   Object.keys(obj).forEach(key => {
@@ -19,6 +20,8 @@ class ModuleCollection {
       state: rootModule.state
     }
 
+    rootModule.rawModule = rawModule
+
     if (!this.root) {
       this.root = rawModule
     } else {
@@ -38,6 +41,16 @@ class ModuleCollection {
 }
 
 function installModule (store, rootState, path, rawModule) {
+  console.log(rawModule)
+  
+  let root = store.modules.root
+  let namespace = path.reduce((str, current) => {
+    console.log(store)
+    console.log(root)
+    root = root._children[current]
+    return str + root._row.spacename ? current + '/' : ''
+  }, '')
+
   if (path.length > 0) {
     // 给根状态定义模块的state
     // debugger;
@@ -51,17 +64,15 @@ function installModule (store, rootState, path, rawModule) {
     let parentState = path.slice(0, -1).reduce((root, current) => {
       return rootState[current]
     }, rootState)
-    console.log(parentState, path[path.length - 1], rawModule)
+
     Vue.set(parentState, path[path.length - 1], rawModule.state)
   }
 
   // 定义getters
-  // console.log(rawModule)
   let getters = rawModule._row.getters
-  console.log(rawModule)
   if (getters) {
     forEach(getters, (getterName, value) => {
-      Object.defineProperty(store.getters, getterName, {
+      Object.defineProperty(store.getters, namespace + getterName, {
         get: () => {
           return value(rawModule.state) // 模块中的状态
         }
@@ -69,8 +80,6 @@ function installModule (store, rootState, path, rawModule) {
     })
   }
 
-  // 定义mutations
-  let mutations = rawModule._row.mutations
   /*
   mutaions的结构
     {
@@ -78,9 +87,12 @@ function installModule (store, rootState, path, rawModule) {
       fn2() {}
     }
   */
+ 
+  // 定义mutations
+  let mutations = rawModule._row.mutations
   if (mutations) {
     forEach(mutations, (mutationName, value) => { // [fn,fn]订阅
-      let arr = store.mutations[mutationName] || (store.mutations[mutationName] = [])
+      let arr = store.mutations[namespace + mutationName] || (store.mutations[namespace + mutationName] = [])
       arr.push((payload) => {
         value(rawModule.state, payload)
       })
@@ -92,7 +104,7 @@ function installModule (store, rootState, path, rawModule) {
   let actions = rawModule._row.actions
   if (actions) {
     forEach(actions, (actionName, value) => {
-      let arr = store.actions[actionName] || (store.actions[actionName] = [])
+      let arr = store.actions[namespace + actionName] || (store.actions[namespace + actionName] = [])
       arr.push((payload) => {
         value(store, payload)
       })
@@ -119,7 +131,6 @@ class Store {
     this.actions = {}
 
     this.modules = new ModuleCollection(options)
-    // console.log('modules => ', this.modules)
     installModule(this, this.state, [], this.modules.root)
   }
 
@@ -145,15 +156,11 @@ class Store {
   // 动态注册模块
   registerModule  = (moduleName, module) => {
     if (!Array.isArray(moduleName)) {
-      this.modules.register([moduleName], module)
-    } else {
-      this.modules.register(moduleName, module)
+      moduleName =[moduleName]
     }
-    
-    console.log([moduleName], this.modules.root._children[moduleName])
-    installModule(this, this.state, [moduleName], this.modules.root._children[moduleName])
+    this.modules.register(moduleName, module)
+    installModule(this, this.state, moduleName, module.rawModule)
   }
-
 }
 
 const install = (_Vue) => {
