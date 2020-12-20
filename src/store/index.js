@@ -3,7 +3,7 @@ import Vuex from '../vuex'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+const module = new Vuex.Store({
   state: {
     amount: 1
   },
@@ -109,3 +109,16 @@ export default new Vuex.Store({
     }
   }
 })
+
+module.registerModule(['dd'], {
+  state: {
+    school: '大魔王大学'
+  },
+  getters: {
+    getSchool (state) {
+      return state.school
+    }
+  }
+})
+
+export default module

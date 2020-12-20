@@ -12,7 +12,7 @@ class ModuleCollection {
   }
 
   register (path, rootModule) {
-    // console.log('register =>>> ', path, rootModule)
+    console.log('register =>>> ', path, rootModule)
     let rawModule = {
       _row: rootModule,
       _children: {},
@@ -51,6 +51,7 @@ function installModule (store, rootState, path, rawModule) {
     let parentState = path.slice(0, -1).reduce((root, current) => {
       return rootState[current]
     }, rootState)
+    console.log(parentState, path[path.length - 1], rawModule)
     Vue.set(parentState, path[path.length - 1], rawModule.state)
   }
 
@@ -140,6 +141,19 @@ class Store {
   get state() {
     return this.vm.state // 这个state是被监控，重新定义后的state
   }
+
+  // 动态注册模块
+  registerModule  = (moduleName, module) => {
+    if (!Array.isArray(moduleName)) {
+      this.modules.register([moduleName], module)
+    } else {
+      this.modules.register(moduleName, module)
+    }
+    
+    console.log([moduleName], this.modules.root._children[moduleName])
+    installModule(this, this.state, [moduleName], this.modules.root._children[moduleName])
+  }
+
 }
 
 const install = (_Vue) => {
