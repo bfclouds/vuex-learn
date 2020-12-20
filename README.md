@@ -1,5 +1,5 @@
 # vuex-learn
-
+学习vuex源码，手动实现vuex的功能
 ## Project setup
 ```
 yarn install

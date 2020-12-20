@@ -1,10 +1,12 @@
 <template>
   <div id="app">
-    <div>{{ $store.state.userInfo.userName }}</div>
-    <div>{{ $store.getters.getUserName }}</div>
-
-    <button @click="$store.mutations.setUserName('菠萝飘雪')">点我修改</button>
-    <button @click="$store.actions.setUserName('菠萝飘雪2')">点我修改</button>
+    <!-- <div>{{ $store.a.state.userInfo.userName }}</div> -->
+    <!-- <div>{{ $store.a.getters.getUserName }}</div> -->
+    <div>aa{{  $store.state.amount }}</div>
+    <div>module a {{ $store.state.a.userInfo.userName }}</div>
+    
+    <button @click="$store.commit('amountAdd', 3)">点我修改</button>
+    <!-- <button @click="$store.actions.setUserName('菠萝飘雪2')">点我修改</button> -->
   </div>
 </template>
 
@@ -12,6 +14,9 @@
 
 export default {
   name: 'App',
+  mounted () {
+    console.log(this.$store, this.$store.mutations.amountAdd)
+  }
 }
 </script>
 
